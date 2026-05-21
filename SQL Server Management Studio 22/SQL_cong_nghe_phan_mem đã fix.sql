@@ -1,264 +1,272 @@
-create database cong_nghe_phan_mem
-use cong_nghe_phan_mem
+CREATE DATABASE cong_nghe_phan_mem;
+GO
 
-create table users(
-	user_id varchar(25) primary key,
-	email varchar(25),
-	user_name varchar(25),
-	password_hash varchar(25),
-	create_at smalldatetime,
-	status varchar(25)
+USE cong_nghe_phan_mem;
+GO
+
+CREATE TABLE users (
+    user_id VARCHAR(25) PRIMARY KEY,
+    email VARCHAR(50),
+    user_name VARCHAR(50),
+    password_hash VARCHAR(255),
+    created_at SMALLDATETIME,
+    status VARCHAR(25)
 );
 
-create table roles(
-	role_id varchar(25) primary key,
-	role_name varchar (25)
+CREATE TABLE roles (
+    role_id VARCHAR(25) PRIMARY KEY,
+    role_name VARCHAR(25)
 );
 
-create table user_roles(
-	user_roleID varchar(25) primary key,
-	user_id varchar(25),
-	role_id varchar(25),
+CREATE TABLE user_roles (
+    user_role_id VARCHAR(25) PRIMARY KEY,
+    user_id VARCHAR(25),
+    role_id VARCHAR(25),
 
-	constraint fk_user 
-	foreign key(user_id)
-	references users(user_id)
+    CONSTRAINT fk_user_roles_users
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id),
 
-	
-
-);
-create table employees(
-	employee_id varchar(25) primary key,
-	user_id varchar(25),
-	full_name varchar(25),
-	phone varchar(25),
-	hire_date smalldatetime,
-	salary float,
-	position varchar(25),
-
-	constraint fk_user
-	foreign key(user_id)
-	references users(user_id)
+    CONSTRAINT fk_user_roles_roles
+    FOREIGN KEY (role_id)
+    REFERENCES roles(role_id)
 );
 
-create table customers(
-	customer_id varchar(25) primary key,
-	full_name varchar(25),
-	phone varchar(25),
-	loyalty_points int,
-	created_at smalldatetime
-)
+CREATE TABLE employees (
+    employee_id VARCHAR(25) PRIMARY KEY,
+    user_id VARCHAR(25),
+    full_name VARCHAR(50),
+    phone VARCHAR(25),
+    hire_date SMALLDATETIME,
+    salary DECIMAL(18,2),
+    position VARCHAR(25),
 
-create table cafe_tables(
-	table_id varchar(25) primary key,
-	table_number varchar(25),
-	status varchar(25)
+    CONSTRAINT fk_employees_users
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
 );
 
-create table reservations(
-	reservation_id varchar(25) primary key,
-	customer_id varchar(25),
-	table_id varchar(25),
-	reservation_time smalldatetime,
-	number_of_people int,
-	status varchar(25),
-
-	constraint fk_customer
-	foreign key(customer_id)
-	references customers(customer_id),
-
-	constraint fk_table
-	foreign key(table_id)
-	references cafe_tables(table_id)
+CREATE TABLE customers (
+    customer_id VARCHAR(25) PRIMARY KEY,
+    full_name VARCHAR(50),
+    phone VARCHAR(25),
+    loyalty_points INT,
+    created_at SMALLDATETIME
 );
 
-create table categories(
-	category_id varchar(25) primary key,
-	category_name varchar(25)
+CREATE TABLE cafe_tables (
+    table_id VARCHAR(25) PRIMARY KEY,
+    table_number VARCHAR(25),
+    status VARCHAR(25)
 );
 
-create table menu_items(
-	item_id varchar(25) primary key,
-	category_id varchar(25),
-	item_name varchar(25),
-	price float,
-	desription text,
-	availability_status varchar(25),
+CREATE TABLE reservations (
+    reservation_id VARCHAR(25) PRIMARY KEY,
+    customer_id VARCHAR(25),
+    table_id VARCHAR(25),
+    reservation_time SMALLDATETIME,
+    number_of_people INT,
+    status VARCHAR(25),
 
-	constraint fk_category
-	foreign key(category_id)
-	references categories(category_id)
+    CONSTRAINT fk_reservations_customers
+    FOREIGN KEY (customer_id)
+    REFERENCES customers(customer_id),
+
+    CONSTRAINT fk_reservations_tables
+    FOREIGN KEY (table_id)
+    REFERENCES cafe_tables(table_id)
 );
 
-create table ingredients(
-	ingredient_id varchar(25) primary key,
-	ingredient_name varchar(25),
-	unit varchar(25),
-	stock_quatity float,
-	minimum_stock float
+CREATE TABLE categories (
+    category_id VARCHAR(25) PRIMARY KEY,
+    category_name VARCHAR(50)
 );
 
-create table menu_item_ingredients(
-	menu_item_ingredients_id varchar(25),
-	item_id varchar(25),
-	ingredient_id varchar(25),
-	quantity_required float,
+CREATE TABLE menu_items (
+    item_id VARCHAR(25) PRIMARY KEY,
+    category_id VARCHAR(25),
+    item_name VARCHAR(50),
+    price DECIMAL(18,2),
+    description TEXT,
+    availability_status VARCHAR(25),
 
-	constraint fk_item
-	foreign key(item_id)
-	references menu_items(item_id),
-
-	constraint fk_ingredient
-	foreign key(ingredient_id)
-	references ingredients(ingredient_id)
+    CONSTRAINT fk_menu_items_categories
+    FOREIGN KEY (category_id)
+    REFERENCES categories(category_id)
 );
 
-create table suppliers(
-	supplier_id varchar(25) primary key,
-	supplier_name varchar(25),
-	phone varchar(25),
-	address varchar(25),
-	email varchar(25)
+CREATE TABLE ingredients (
+    ingredient_id VARCHAR(25) PRIMARY KEY,
+    ingredient_name VARCHAR(50),
+    unit VARCHAR(25),
+    stock_quantity DECIMAL(18,2),
+    minimum_stock DECIMAL(18,2)
 );
 
-create table iventory_logs(
-	inventory_log_id varchar(25),
-	ingredient_id varchar(25),
-	supplier_id varchar(25),
-	quantity float,
-	log_type varchar(25),
-	log_date smalldatetime
+CREATE TABLE menu_item_ingredients (
+    menu_item_ingredient_id VARCHAR(25) PRIMARY KEY,
+    item_id VARCHAR(25),
+    ingredient_id VARCHAR(25),
+    quantity_required DECIMAL(18,2),
 
-	constraint fk_ingredient
-	foreign key(ingredient_id)
-	references ingredients(ingredient_id),
+    CONSTRAINT fk_menu_item_ingredients_items
+    FOREIGN KEY (item_id)
+    REFERENCES menu_items(item_id),
 
-	constraint fk_suppy
-	foreign key(supplier_id)
-	references suppliers(supplier_id)
-
+    CONSTRAINT fk_menu_item_ingredients_ingredients
+    FOREIGN KEY (ingredient_id)
+    REFERENCES ingredients(ingredient_id)
 );
 
-create table orders(
-	order_id varchar(25) primary key,
-	customer_id varchar(25),
-	employee_id varchar(25),
-	table_id varchar(25),
-	order_time smalldatetime,
-	total_amount float,
-	roder_status varchar(25),
-
-	constraint fk_customer
-	foreign key(customer_id)
-	references customers(customer_id),
-
-	constraint fk_employee
-	foreign key(employee_id)
-	references employees(employee_id),
-
-	constraint fk_table
-	foreign key(table_id)
-	references cafe_tables(table_id)
+CREATE TABLE suppliers (
+    supplier_id VARCHAR(25) PRIMARY KEY,
+    supplier_name VARCHAR(50),
+    phone VARCHAR(25),
+    address VARCHAR(100),
+    email VARCHAR(50)
 );
 
-create table order_items(
-	order_items varchar(25) primary key,
-	order_id varchar(25),
-	item_id varchar(25),
-	quantity int,
-	unit_price float,
-	subtotal float,
+CREATE TABLE inventory_logs (
+    inventory_log_id VARCHAR(25) PRIMARY KEY,
+    ingredient_id VARCHAR(25),
+    supplier_id VARCHAR(25),
+    quantity DECIMAL(18,2),
+    log_type VARCHAR(25),
+    log_date SMALLDATETIME,
 
-	constraint fk_order
-	foreign key(order_id)
-	references orders(order_id),
+    CONSTRAINT fk_inventory_logs_ingredients
+    FOREIGN KEY (ingredient_id)
+    REFERENCES ingredients(ingredient_id),
 
-	constraint fk_item
-	foreign key(item_id)
-	references menu_items(item_id)
+    CONSTRAINT fk_inventory_logs_suppliers
+    FOREIGN KEY (supplier_id)
+    REFERENCES suppliers(supplier_id)
 );
 
-create table payments(
-	payment_id varchar(25) primary key,
-	order_id varchar(25),
-	payment_method varchar(25),
-	payment_time smalldatetime,
-	amout float,
-	payment_status varchar(25),
+CREATE TABLE orders (
+    order_id VARCHAR(25) PRIMARY KEY,
+    customer_id VARCHAR(25),
+    employee_id VARCHAR(25),
+    table_id VARCHAR(25),
+    order_time SMALLDATETIME,
+    total_amount DECIMAL(18,2),
+    order_status VARCHAR(25),
 
-	constraint fk_order
-	foreign key(order_id)
-	references orders(order_id)
+    CONSTRAINT fk_orders_customers
+    FOREIGN KEY (customer_id)
+    REFERENCES customers(customer_id),
+
+    CONSTRAINT fk_orders_employees
+    FOREIGN KEY (employee_id)
+    REFERENCES employees(employee_id),
+
+    CONSTRAINT fk_orders_tables
+    FOREIGN KEY (table_id)
+    REFERENCES cafe_tables(table_id)
 );
 
-create table promotions(
-	promotion_id varchar(25) primary key,
-	promotion_name varchar(25),
-	discount_percent float,
-	starts_date smalldatetime,
-	end_date smalldatetime
+CREATE TABLE order_items (
+    order_item_id VARCHAR(25) PRIMARY KEY,
+    order_id VARCHAR(25),
+    item_id VARCHAR(25),
+    quantity INT,
+    unit_price DECIMAL(18,2),
+    subtotal DECIMAL(18,2),
+
+    CONSTRAINT fk_order_items_orders
+    FOREIGN KEY (order_id)
+    REFERENCES orders(order_id),
+
+    CONSTRAINT fk_order_items_menu_items
+    FOREIGN KEY (item_id)
+    REFERENCES menu_items(item_id)
 );
 
+CREATE TABLE payments (
+    payment_id VARCHAR(25) PRIMARY KEY,
+    order_id VARCHAR(25),
+    payment_method VARCHAR(25),
+    payment_time SMALLDATETIME,
+    amount DECIMAL(18,2),
+    payment_status VARCHAR(25),
 
-create table order_promotions(
-	order_promotion_id varchar(25) primary key,
-	order_id varchar(25),
-	promotion_id varchar(25)
-
-	constraint fk_order
-	foreign key(order_id)
-	references orders(order_id),
-
-	constraint fk_promotion
-	foreign key(promotion_id)
-	references promotions(promotion_id)
+    CONSTRAINT fk_payments_orders
+    FOREIGN KEY (order_id)
+    REFERENCES orders(order_id)
 );
 
-
-
-create table audit_logs(
-	log_id varchar(25) primary key,
-	user_id varchar(25),
-	action varchar (25),
-	log_time smalldatetime,
-
-	constraint fk_user
-	foreign key(user_id)
-	references users(user_id)
+CREATE TABLE promotions (
+    promotion_id VARCHAR(25) PRIMARY KEY,
+    promotion_name VARCHAR(50),
+    discount_percent DECIMAL(5,2),
+    start_date SMALLDATETIME,
+    end_date SMALLDATETIME
 );
 
-create table prodcuts(
-	products_id varchar(25) primary key,
-	category_ID varchar(25),
-	description varchar(25),
-	price float,
-	status varchar(25),
-	create_at smalldatetime
-);
-create table purchase_Order(
-	purchaseOrder_id varchar(25) primary key,
-	supplierId varchar(25),
-	orderDate smalldatetime,
-	TotalAmount float not null default 0,
-	status varchar(25) not null default 'pending',
-	note nvarchar(255),
-	createAt smalldatetime 
+CREATE TABLE order_promotions (
+    order_promotion_id VARCHAR(25) PRIMARY KEY,
+    order_id VARCHAR(25),
+    promotion_id VARCHAR(25),
+
+    CONSTRAINT fk_order_promotions_orders
+    FOREIGN KEY (order_id)
+    REFERENCES orders(order_id),
+
+    CONSTRAINT fk_order_promotions_promotions
+    FOREIGN KEY (promotion_id)
+    REFERENCES promotions(promotion_id)
 );
 
-create table purchase_Order_Detail(
-	PurchaseOrderDetailID varchar(25) primary key,
-	purchaseOrder_id varchar(25),
-	ingredient_id varchar(25),
-	quantity decimal(10,2) not null,
-	unitPrice decimal(18,2) not null
-)
+CREATE TABLE audit_logs (
+    log_id VARCHAR(25) PRIMARY KEY,
+    user_id VARCHAR(25),
+    action VARCHAR(100),
+    log_time SMALLDATETIME,
 
+    CONSTRAINT fk_audit_logs_users
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+);
 
+CREATE TABLE products (
+    product_id VARCHAR(25) PRIMARY KEY,
+    category_id VARCHAR(25),
+    description VARCHAR(100),
+    price DECIMAL(18,2),
+    status VARCHAR(25),
+    created_at SMALLDATETIME,
 
+    CONSTRAINT fk_products_categories
+    FOREIGN KEY (category_id)
+    REFERENCES categories(category_id)
+);
 
+CREATE TABLE purchase_orders (
+    purchase_order_id VARCHAR(25) PRIMARY KEY,
+    supplier_id VARCHAR(25),
+    order_date SMALLDATETIME,
+    total_amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    status VARCHAR(25) NOT NULL DEFAULT 'pending',
+    note NVARCHAR(255),
+    created_at SMALLDATETIME,
 
+    CONSTRAINT fk_purchase_orders_suppliers
+    FOREIGN KEY (supplier_id)
+    REFERENCES suppliers(supplier_id)
+);
 
+CREATE TABLE purchase_order_details (
+    purchase_order_detail_id VARCHAR(25) PRIMARY KEY,
+    purchase_order_id VARCHAR(25),
+    ingredient_id VARCHAR(25),
+    quantity DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(18,2) NOT NULL,
 
+    CONSTRAINT fk_purchase_order_details_orders
+    FOREIGN KEY (purchase_order_id)
+    REFERENCES purchase_orders(purchase_order_id),
 
-
-	
+    CONSTRAINT fk_purchase_order_details_ingredients
+    FOREIGN KEY (ingredient_id)
+    REFERENCES ingredients(ingredient_id)
+);
