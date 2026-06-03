@@ -7,3 +7,7 @@ https://1drv.ms/w/c/624fe2aea91a93ce/IQA6fvpyY5hAQaj2CQJ1yzPuAepal_wE4iiYaJe4NQd
 
 Web mẫu 
 https://admin.posapp.vn/
+
+
+Khảo sát:
+https://forms.gle/ioFhrqtX9WqjWJwA8
